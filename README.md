@@ -1,3 +1,6 @@
+### What
+GCP에서 디스코드 훅에 알람을 보내기 위한 미니 express 프로젝트입니다.
+
 ### Usage
 1. 토큰 생성
 `openssl rand -hex 32`
