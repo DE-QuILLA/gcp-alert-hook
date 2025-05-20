@@ -1,0 +1,51 @@
+### Usage
+1. 토큰 생성
+`openssl rand -hex 32`
+
+2. 프로젝트 폴더에서 Cloud Run으로 훅 백엔드 배포
+```bash
+gcloud run deploy gcp-alert-hook \
+  --source . \
+  --region asia-northeast3 \
+  --allow-unauthenticated \
+  --set-env-vars DISCORD_WEBHOOK=[디스코드웹훅url],ALERT_SECRET=[토큰] \
+  --project [project-id]
+```
+
+3. Cloud Run instance 주소 찾기
+`gcloud run services describe gcp-alert-hook --project [project-id] | grep URL:`
+-> 6 선택
+-> 출력된 URL을 webhook.json의 url 부분에 넣기
+
+4. 이건 루트가 해야함 
+```bash
+gcloud beta run services add-iam-policy-binding --region=asia-northeast3 --member=allUsers --role=roles/run.invoker gcp-alert-hook --project [project-id]
+```
+
+5. webhook.json 스펙으로 monitoring channel 추가
+```bash
+gcloud alpha monitoring channels create --channel-content-from-file="webhook.json" --project [project-id]
+```
+
+4. 콘솔에 logs explorer 검색 -> 쿼리에 다음을 입력
+```plaintext
+resource.type="gke_cluster"
+protoPayload.methodName="google.container.v1.ClusterManager.CreateCluster"
+```
+Run Query 눌러 본 후, 그래프 오른쪽 아래의 Actions 클릭 -> Create metric
+-> 이름만 수정 후 생성
+
+5. delete 메트릭도 똑같이 생성
+```plaintext
+resource.type="gke_cluster"
+protoPayload.methodName="google.container.v1.ClusterManager.DeleteCluster"
+```
+
+6. monitoring 콘솔에서 다음 작업을 create, delete 각각에 대해 반복
+-> alerting 탭 -> Add alert condition -> Select a metric -> Active 태그 비활성
+-> 생성한 메트릭 이름 검색 후 추가
+-> Transform data에서 rolling window function: count 선택 -> configure trigger로 이동
+-> threshold -> any time series + above threshold + 1 선택 -> Notifications로 이동
+-> Use notification channel 토글 후 Notification channel에서 아까 만든 채널 찾기
+-> 채널 옆에 edit(연필모양) 선택 -> url 끝에 쿼리 스트링 추가 (?auth_token=[토큰])
+-> Alert policy 이름 정한 후 create

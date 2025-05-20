@@ -1,0 +1,9 @@
+{
+  "type": "webhook_tokenauth",
+  "displayName": "GKE ALERT HOOK",
+  "labels": {
+    "url": "[https://클라우드런.인스턴스.url]/[백엔드/라우트]"
+  },
+  "verificationStatus": "VERIFIED",
+  "userLabels": {}
+}
