@@ -25,7 +25,8 @@ gcloud run deploy gcp-alert-hook \
 gcloud beta run services add-iam-policy-binding --region=asia-northeast3 --member=allUsers --role=roles/run.invoker gcp-alert-hook --project [project-id]
 ```
 
-5. webhook.json 스펙으로 monitoring channel 추가
+5. webhook.json 스펙으로 monitoring channel 추가 
+(created, destroyed 두개 엔드포인트 만들어야합니다 webhook.json [백엔드/라우트] 부분 및 이름 바꿔가면서 실행)
 ```bash
 gcloud alpha monitoring channels create --channel-content-from-file="webhook.json" --project [project-id]
 ```
@@ -34,8 +35,9 @@ gcloud alpha monitoring channels create --channel-content-from-file="webhook.jso
 ```plaintext
 resource.type="gke_cluster"
 protoPayload.methodName="google.container.v1.ClusterManager.CreateCluster"
+protoPayload.response.status="RUNNING"
 ```
-Run Query 눌러 본 후, 그래프 오른쪽 아래의 Actions 클릭 -> Create metric
+Run Query 눌러 본 후, 그래프 오른쪽 아래의 Actions 클릭 -> Create metric<br>
 -> 이름만 수정 후 생성
 
 5. delete 메트릭도 똑같이 생성
@@ -44,11 +46,11 @@ resource.type="gke_cluster"
 protoPayload.methodName="google.container.v1.ClusterManager.DeleteCluster"
 ```
 
-6. monitoring 콘솔에서 다음 작업을 create, delete 각각에 대해 반복
--> alerting 탭 -> Add alert condition -> Select a metric -> Active 태그 비활성
--> 생성한 메트릭 이름 검색 후 추가
--> Transform data에서 rolling window function: count 선택 -> configure trigger로 이동
--> threshold -> any time series + above threshold + 1 선택 -> Notifications로 이동
--> Use notification channel 토글 후 Notification channel에서 아까 만든 채널 찾기
--> 채널 옆에 edit(연필모양) 선택 -> url 끝에 쿼리 스트링 추가 (?auth_token=[토큰])
--> Alert policy 이름 정한 후 create
+6. monitoring 콘솔에서 다음 작업을 create, delete 각각에 대해 반복<br>
+-> alerting 탭 -> Add alert condition -> Select a metric -> Active 태그 비활성<br>
+-> 생성한 메트릭 이름 검색 후 추가<br>
+-> Transform data에서 rolling window function: count 선택 -> configure trigger로 이동<br>
+-> threshold -> any time series + above threshold + 1 선택 -> Notifications로 이동<br>
+-> Use notification channel 토글 후 Notification channel에서 아까 만든 채널 찾기<br>
+-> 채널 옆에 edit(연필모양) 선택 -> url 끝에 쿼리 스트링 추가 (?auth_token=[토큰])<br>
+-> Alert policy 이름 정한 후 create<br>
