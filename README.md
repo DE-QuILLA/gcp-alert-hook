@@ -1,7 +1,21 @@
 ### What
 GCP에서 디스코드 훅에 알람을 보내기 위한 미니 express 프로젝트입니다.
 
+### GCP 셋업
+**APIs**<br>
+- apis & services에서 다음을 enable
+- cloudbuild api
+- cloud run admin api
+- cloud resource manager api
+- kubernetes engine api
+<br>
+
+**SA Permissions**<br>
+- iam & admin에서 SA에 다음 role 추가
+![alt text](image.png)
+
 ### Usage
+
 1. 토큰 생성
 `openssl rand -hex 32`
 
@@ -50,7 +64,7 @@ protoPayload.methodName="google.container.v1.ClusterManager.DeleteCluster"
 -> alerting 탭 -> Add alert condition -> Select a metric -> Active 태그 비활성<br>
 -> 생성한 메트릭 이름 검색 후 추가<br>
 -> Transform data에서 rolling window function: count 선택 -> configure trigger로 이동<br>
--> threshold -> any time series + above threshold + 1 선택 -> Notifications로 이동<br>
+-> threshold -> any time series + above threshold + 0 선택 -> Notifications로 이동<br>
 -> Use notification channel 토글 후 Notification channel에서 아까 만든 채널 찾기<br>
 -> 채널 옆에 edit(연필모양) 선택 -> url 끝에 쿼리 스트링 추가 (?auth_token=[토큰])<br>
 -> Alert policy 이름 정한 후 create<br>
