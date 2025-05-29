@@ -63,7 +63,9 @@ protoPayload.methodName="google.container.v1.ClusterManager.DeleteCluster"
 6. monitoring 콘솔에서 다음 작업을 create, delete 각각에 대해 반복<br>
 -> alerting 탭 -> Add alert condition -> Select a metric -> Active 태그 비활성<br>
 -> 생성한 메트릭 이름 검색 후 추가<br>
--> Transform data에서 rolling window function: count 선택 -> configure trigger로 이동<br>
+-> 필터 -> log 선택, comparator = -> cloudaudit.googleapis.com/activity<br>
+-> Transform data에서 rolling window 30 min,<br>
+-> rolling window function: count 선택 -> configure trigger로 이동<br>
 -> threshold -> any time series + above threshold + 0 선택 -> Notifications로 이동<br>
 -> Use notification channel 토글 후 Notification channel에서 아까 만든 채널 찾기<br>
 -> 채널 옆에 edit(연필모양) 선택 -> url 끝에 쿼리 스트링 추가 (?auth_token=[토큰])<br>
